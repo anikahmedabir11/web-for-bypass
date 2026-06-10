@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anik X Cheats | Premium Stealth Bypass</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Dependencies -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.0/vanilla-tilt.min.js"></script>
+    
+    <style>
+        :root {
+            --bg-dark: #000000;
+            --primary: #ff2a2a;
+            --primary-rgb: 255, 42, 42;
+            --text-main: #fcfcfc;
+            --text-muted: #888888;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            cursor: none;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Custom Cursor */
+        .cursor {
+            width: 6px; height: 6px;
+            background: #fff;
+            border-radius: 50%;
+            position: fixed;
+            top: 0; left: 0;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s, background 0.3s;
+            mix-blend-mode: difference;
+        }
+
+        .cursor-follower {
+            width: 30px; height: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            position: fixed;
+            top: 0; left: 0;
+            pointer-events: none;
+            z-index: 9998;
+            transform: translate(-50%, -50%);
+            transition: transform 0.1s ease-out, width 0.3s, height 0.3s, border-color 0.3s;
+        }
+
+        .cursor.active {
+            width: 80px; height: 80px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(4px);
+        }
+        .cursor-follower.active { border-color: transparent; }
+
+        /* Preloader */
+        .preloader {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #050505;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .loader-count {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 5rem;
+            font-weight: 700;
+            color: transparent;
+            -webkit-text-stroke: 1px var(--primary);
+            position: relative;
+        }
+
+        .loader-count::after {
+            content: '%';
+            font-size: 2rem;
+            position: absolute;
+            top: 10px; right: -40px;
+        }
+
+        .loader-text-small {
+            font-family: 'Syncopate', sans-serif;
+            letter-spacing: 5px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 20px;
+            text-transform: uppercase;
+        }
+
+        /* 3D Canvas */
+        #webgl-container {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Nav */
+        nav {
+            position: fixed;
+            top: 0; width: 100%;
+            padding: 30px 5%;
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 100;
+            background: rgba(0,0,0,0.2);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+        }
+
+        .logo {
+            font-family: 'Syncopate', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: #fff;
+        }
+
+        .logo span { color: var(--primary); text-shadow: 0 0 10px rgba(255,42,42,0.5); }
+
+        .nav-links { display: flex; gap: 40px; }
+        .nav-links a {
+            color: #fff; text-decoration: none; font-size: 0.85rem;
+            text-transform: uppercase; letter-spacing: 2px; font-weight: 600;
+            position: relative;
+        }
+        .nav-links a::after {
+            content: ''; position: absolute; bottom: -5px; left: 0; width: 0; height: 1px;
+            background: #fff; transition: 0.3s;
+        }
+        .nav-links a:hover::after { width: 100%; }
+
+        /* Typography Scrambler */
+        .scramble-text {
+            font-family: 'Syncopate', sans-serif;
+            text-transform: uppercase;
+            visibility: hidden; /* Hidden until preloader finishes */
+        }
+
+        /* Layout */
+        section {
+            position: relative;
+            min-height: 100vh;
+            padding: 120px 5%;
+            display: flex;
+            align-items: center;
+        }
+
+        .hero { justify-content: flex-start; }
+        .hero-content { max-width: 900px; }
+
+        .hero h1 {
+            font-size: clamp(3rem, 7vw, 6.5rem);
+            line-height: 1;
+            font-weight: 700;
+            margin-bottom: 30px;
+            color: #fff;
+            text-shadow: 0 0 40px rgba(255,255,255,0.2);
+        }
+
+        .hero h1 .stroke {
+            color: transparent;
+            -webkit-text-stroke: 1px rgba(255,255,255,0.3);
+            text-shadow: none;
+        }
+
+        .hero p {
+            font-size: 1.1rem; color: var(--text-muted);
+            max-width: 500px; line-height: 1.6; margin-bottom: 50px;
+            font-family: 'JetBrains Mono', monospace;
+            opacity: 0; transform: translateY(20px);
+        }
+
+        .magnetic-btn {
+            display: inline-block; padding: 20px 40px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.03);
+            backdrop-filter: blur(10px);
+            border-radius: 50px; color: #fff; text-decoration: none;
+            text-transform: uppercase; letter-spacing: 2px; font-size: 0.85rem; font-weight: 700;
+            position: relative; overflow: hidden; transition: 0.3s;
+        }
+
+        .magnetic-btn::before {
+            content: ''; position: absolute; top: 100%; left: 0; width: 100%; height: 100%;
+            background: var(--primary); transition: top 0.4s cubic-bezier(0.7, 0, 0.2, 1); z-index: -1;
+        }
+
+        .magnetic-btn:hover::before { top: 0; }
+        .magnetic-btn:hover { border-color: transparent; box-shadow: 0 10px 30px rgba(255,42,42,0.3); }
+
+        /* Store */
+        .store { flex-direction: column; justify-content: center; }
+
+        .section-title {
+            font-family: 'Syncopate', sans-serif;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 700; text-transform: uppercase;
+            text-align: center; margin-bottom: 80px; width: 100%;
+            color: transparent; -webkit-text-stroke: 1px #fff;
+        }
+
+        .products-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px; width: 100%; max-width: 1300px; margin: 0 auto;
+        }
+
+        .product-card {
+            background: rgba(10, 10, 10, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            padding: 40px 30px;
+            border-radius: 20px;
+            position: relative;
+            transition: border-color 0.4s;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+            transform-style: preserve-3d;
+        }
+
+        .product-card:hover { border-color: rgba(255,42,42,0.4); }
+
+        .p-image { height: 100px; display: flex; align-items: center; justify-content: center; margin-bottom: 30px; transform: translateZ(50px); }
+        .p-image img { max-height: 80px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.8)); }
+
+        .p-title { font-size: 1.8rem; font-weight: 800; margin-bottom: 10px; transform: translateZ(30px); }
+        .p-price { font-family: 'Syncopate', sans-serif; font-size: 2.5rem; color: var(--primary); margin-bottom: 25px; transform: translateZ(40px); text-shadow: 0 0 20px rgba(255,42,42,0.4); }
+        .p-price span { font-size: 1rem; color: var(--text-muted); font-family: 'Outfit', sans-serif; text-shadow: none; }
+        
+        .p-features { list-style: none; margin-bottom: 40px; transform: translateZ(20px); }
+        .p-features li {
+            padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.02);
+            font-size: 0.9rem; color: #aaa; display: flex; align-items: center; gap: 12px;
+        }
+        .p-features li::before { content: '■'; font-size: 0.6rem; color: var(--primary); }
+
+        .btn-buy {
+            display: block; width: 100%; padding: 18px;
+            background: rgba(255,42,42,0.1); border: 1px solid rgba(255,42,42,0.3);
+            color: #fff; text-align: center; text-transform: uppercase;
+            letter-spacing: 2px; font-weight: 700; border-radius: 10px;
+            transition: 0.4s; transform: translateZ(30px); text-decoration: none;
+        }
+        .btn-buy:hover { background: var(--primary); box-shadow: 0 0 30px rgba(255,42,42,0.5); border-color: var(--primary); }
+
+        footer {
+            padding: 40px 5%; border-top: 1px solid rgba(255,255,255,0.03);
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(0,0,0,0.5); backdrop-filter: blur(20px);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="preloader">
+        <div class="loader-count">0</div>
+        <div class="loader-text-small">Establishing Secure Connection...</div>
+    </div>
+
+    <div class="cursor"></div>
+    <div class="cursor-follower"></div>
+
+    <div id="webgl-container"></div>
+
+    <nav>
+        <div class="logo">Anik X <span>Cheats</span></div>
+        <div class="nav-links">
+            <a href="#store" class="hover-target">Store</a>
+            <a href="https://discord.gg/anikxcheats" target="_blank" class="hover-target">Discord</a>
+            {% if session.user_id %}
+                <a href="{{ url_for('dashboard') }}" class="hover-target">Dashboard</a>
+            {% else %}
+                <a href="{{ url_for('login') }}" class="hover-target">Sign In</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1 class="scramble-text" data-text="ABSOLUTE">ABSOLUTE</h1>
+            <h1 class="scramble-text stroke" data-text="DOMINANCE" style="margin-top:-20px;">DOMINANCE</h1>
+            <p class="hero-sub">
+                SYS_MSG: SECURE KERNEL BYPASS INITIATED.<br>
+                STATUS: UNDETECTED.<br><br>
+                Experience the most advanced stealth technology engineered for competitive environments.
+            </p>
+            <div style="opacity: 0; transform: translateY(20px);" class="hero-btn-wrapper">
+                <a href="#store" class="magnetic-btn hover-target">Initialize Access</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="store" id="store">
+        <h2 class="section-title scramble-text" data-text="PREMIUM ACCESS">PREMIUM ACCESS</h2>
+        
+        <div class="products-grid">
+            {% if products %}
+                {% for product in products %}
+                <div class="product-card hover-target" data-tilt data-tilt-max="10" data-tilt-speed="400" data-tilt-glare="true" data-tilt-max-glare="0.1">
+                    <div class="p-image">
+                        {% if product.image_url %}
+                            <img src="{{ product.image_url }}" alt="{{ product.name }}">
+                        {% else %}
+                            <span style="font-size: 60px;">🔑</span>
+                        {% endif %}
+                    </div>
+                    <h3 class="p-title">{{ product.name }}</h3>
+                    {% if product.badge %}
+                        <div style="background: rgba(255, 42, 42, 0.1); color: var(--primary); padding: 4px 10px; border-radius: 4px; font-size: 0.7rem; font-family: 'JetBrains Mono'; display: inline-block; margin-bottom: 15px; border: 1px solid rgba(255, 42, 42, 0.3);">
+                            [{{ product.badge }}]
+                        </div>
+                    {% endif %}
+                    
+                    <div class="p-price">
+                        ${{ product.price }} <span>/ {{ product.duration_days }} Days</span>
+                    </div>
+                    
+                    <ul class="p-features">
+                        {% if product.features %}
+                            {% for feature in product.features %}
+                                <li>{{ feature }}</li>
+                            {% endfor %}
+                        {% else %}
+                            <li>{{ product.duration_days }} Days Access</li>
+                            <li>Instant Automated Delivery</li>
+                        {% endif %}
+                    </ul>
+                    
+                    {% if zinipay_enabled %}
+                        <form action="{{ url_for('pay_zinipay') }}" method="POST">
+                            <input type="hidden" name="product_id" value="{{ product.id }}">
+                            <button type="submit" class="btn-buy hover-target">Purchase Now</button>
+                        </form>
+                    {% else %}
+                        <a href="{{ product.buy_url }}" target="_blank" class="btn-buy hover-target">Purchase Now</a>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            {% else %}
+                <div style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 100px; border: 1px dashed rgba(255,255,255,0.05); border-radius: 20px; backdrop-filter: blur(20px);">
+                    <span style="font-size: 50px; opacity: 0.2;">_NO_DATA_</span>
+                    <h3 style="margin-top: 20px; font-family: 'JetBrains Mono', monospace; color: #555;">[ STORE_DB_EMPTY ]</h3>
+                </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <footer>
+        <div class="logo">Anik X <span>Cheats</span></div>
+        <div style="color: var(--text-muted); font-size: 0.8rem; font-family: 'JetBrains Mono';">SECURE SYSTEM // © 2026 AXC.</div>
+    </footer>
+
+    <!-- GLSL Shaders for WebGL Background -->
+    <script id="vertexShader" type="x-shader/x-vertex">
+        varying vec2 vUv;
+        void main() {
+            vUv = uv;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+    </script>
+
+    <script id="fragmentShader" type="x-shader/x-fragment">
+        uniform float u_time;
+        uniform vec2 u_resolution;
+        uniform vec2 u_mouse;
+        varying vec2 vUv;
+
+        // Simplex Noise Function
+        vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+        vec2 mod289(vec2 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+        vec3 permute(vec3 x) { return mod289(((x*34.0)+1.0)*x); }
+
+        float snoise(vec2 v) {
+            const vec4 C = vec4(0.211324865405187,  // (3.0-sqrt(3.0))/6.0
+                                0.366025403784439,  // 0.5*(sqrt(3.0)-1.0)
+                               -0.577350269189626,  // -1.0 + 2.0 * C.x
+                                0.024390243902439); // 1.0 / 41.0
+            vec2 i  = floor(v + dot(v, C.yy) );
+            vec2 x0 = v -   i + dot(i, C.xx);
+            vec2 i1;
+            i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
+            vec4 x12 = x0.xyxy + C.xxzz;
+            x12.xy -= i1;
+            i = mod289(i);
+            vec3 p = permute( permute( i.y + vec3(0.0, i1.y, 1.0 ))
+                + i.x + vec3(0.0, i1.x, 1.0 ));
+            vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy), dot(x12.zw,x12.zw)), 0.0);
+            m = m*m ;
+            m = m*m ;
+            vec3 x = 2.0 * fract(p * C.www) - 1.0;
+            vec3 h = abs(x) - 0.5;
+            vec3 ox = floor(x + 0.5);
+            vec3 a0 = x - ox;
+            m *= 1.79284291400159 - 0.85373472095314 * ( a0*a0 + h*h );
+            vec3 g;
+            g.x  = a0.x  * x0.x  + h.x  * x0.y;
+            g.yz = a0.yz * x12.xz + h.yz * x12.yw;
+            return 130.0 * dot(m, g);
+        }
+
+        void main() {
+            vec2 st = gl_FragCoord.xy / u_resolution.xy;
+            st.x *= u_resolution.x / u_resolution.y;
+
+            // Mouse interaction
+            vec2 mouseDist = st - u_mouse;
+            float dist = length(mouseDist);
+            float mouseInfluence = smoothstep(0.5, 0.0, dist) * 0.5;
+
+            vec2 pos = st * 3.0;
+            float n = snoise(pos + u_time * 0.2 + mouseInfluence);
+            float n2 = snoise(pos + n * 2.0 - u_time * 0.1);
+            float n3 = snoise(pos + n2 * 4.0 + u_time * 0.05);
+
+            float intensity = smoothstep(0.0, 1.0, n3);
+            
+            // Cyberpunk Red/Black Palette
+            vec3 color1 = vec3(0.02, 0.0, 0.0); // Dark background
+            vec3 color2 = vec3(0.8, 0.05, 0.05); // Deep Red
+            vec3 color3 = vec3(1.0, 0.2, 0.1); // Bright Red Highlight
+
+            vec3 finalColor = mix(color1, color2, intensity);
+            finalColor = mix(finalColor, color3, smoothstep(0.6, 1.0, intensity) * 0.5);
+
+            // Add subtle grid overlay
+            vec2 grid = fract(st * 20.0);
+            float line = smoothstep(0.0, 0.05, grid.x) * smoothstep(0.0, 0.05, grid.y);
+            finalColor *= (0.9 + 0.1 * line);
+
+            gl_FragColor = vec4(finalColor, 1.0);
+        }
+    </script>
+
+    <!-- Core Logic -->
+    <script>
+        // Custom Cursor
+        const cursor = document.querySelector('.cursor');
+        const follower = document.querySelector('.cursor-follower');
+        const hoverTargets = document.querySelectorAll('.hover-target');
+
+        let mouseX = 0, mouseY = 0;
+        let followerX = 0, followerY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX; mouseY = e.clientY;
+            cursor.style.left = mouseX + 'px'; cursor.style.top = mouseY + 'px';
+        });
+
+        gsap.ticker.add(() => {
+            followerX += (mouseX - followerX) * 0.2;
+            followerY += (mouseY - followerY) * 0.2;
+            follower.style.left = followerX + 'px'; follower.style.top = followerY + 'px';
+        });
+
+        hoverTargets.forEach(target => {
+            target.addEventListener('mouseenter', () => {
+                cursor.classList.add('active'); follower.classList.add('active');
+            });
+            target.addEventListener('mouseleave', () => {
+                cursor.classList.remove('active'); follower.classList.remove('active');
+            });
+        });
+
+        // Magnetic Buttons
+        document.querySelectorAll('.magnetic-btn').forEach(btn => {
+            btn.addEventListener('mousemove', function(e) {
+                const position = btn.getBoundingClientRect();
+                const x = e.pageX - position.left - position.width / 2;
+                const y = e.pageY - position.top - position.height / 2;
+                gsap.to(btn, { x: x * 0.3, y: y * 0.5, ease: 'power2.out', duration: 0.5 });
+            });
+            btn.addEventListener('mouseleave', function() {
+                gsap.to(btn, { x: 0, y: 0, ease: 'elastic.out(1, 0.3)', duration: 1.2 });
+            });
+        });
+
+        // Text Scrambler Class
+        class TextScrambler {
+            constructor(el) {
+                this.el = el;
+                this.chars = '!<>-_\\\\/[]{}—=+*^?#________';
+                this.update = this.update.bind(this);
+            }
+            setText(newText) {
+                const oldText = this.el.innerText;
+                const length = Math.max(oldText.length, newText.length);
+                const promise = new Promise((resolve) => this.resolve = resolve);
+                this.queue = [];
+                for (let i = 0; i < length; i++) {
+                    const from = oldText[i] || '';
+                    const to = newText[i] || '';
+                    const start = Math.floor(Math.random() * 40);
+                    const end = start + Math.floor(Math.random() * 40);
+                    this.queue.push({ from, to, start, end });
+                }
+                cancelAnimationFrame(this.frameRequest);
+                this.frame = 0;
+                this.update();
+                return promise;
+            }
+            update() {
+                let output = '';
+                let complete = 0;
+                for (let i = 0, n = this.queue.length; i < n; i++) {
+                    let { from, to, start, end, char } = this.queue[i];
+                    if (this.frame >= end) {
+                        complete++;
+                        output += to;
+                    } else if (this.frame >= start) {
+                        if (!char || Math.random() < 0.28) {
+                            char = this.randomChar();
+                            this.queue[i].char = char;
+                        }
+                        output += `<span style="color:var(--text-muted)">${char}</span>`;
+                    } else {
+                        output += from;
+                    }
+                }
+                this.el.innerHTML = output;
+                if (complete === this.queue.length) {
+                    this.resolve();
+                } else {
+                    this.frameRequest = requestAnimationFrame(this.update);
+                    this.frame++;
+                }
+            }
+            randomChar() {
+                return this.chars[Math.floor(Math.random() * this.chars.length)];
+            }
+        }
+
+        // Preloader & Init Sequence
+        window.addEventListener('load', () => {
+            let count = 0;
+            const counterEl = document.querySelector('.loader-count');
+            
+            const countInterval = setInterval(() => {
+                count += Math.floor(Math.random() * 10) + 1;
+                if(count > 100) count = 100;
+                counterEl.innerText = count;
+                
+                if(count === 100) {
+                    clearInterval(countInterval);
+                    initAnimations();
+                }
+            }, 50);
+        });
+
+        function initAnimations() {
+            const tl = gsap.timeline();
+            
+            tl.to('.preloader', {
+                opacity: 0, duration: 1, ease: 'power2.inOut',
+                onComplete: () => {
+                    document.querySelector('.preloader').style.display = 'none';
+                    
+                    // Trigger Text Scramblers
+                    document.querySelectorAll('.scramble-text').forEach(el => {
+                        el.style.visibility = 'visible';
+                        const originalText = el.getAttribute('data-text');
+                        el.innerText = '';
+                        const scrambler = new TextScrambler(el);
+                        scrambler.setText(originalText);
+                    });
+                }
+            })
+            .to('.hero-sub', { opacity: 1, y: 0, duration: 1, ease: 'power3.out' }, "+=0.5")
+            .to('.hero-btn-wrapper', { opacity: 1, y: 0, duration: 1, ease: 'power3.out' }, "-=0.8");
+            
+            // Scroll Animations
+            gsap.registerPlugin(ScrollTrigger);
+
+            gsap.from('.product-card', {
+                scrollTrigger: {
+                    trigger: '.store',
+                    start: 'top 80%'
+                },
+                y: 50,
+                opacity: 0,
+                duration: 1,
+                stagger: 0.15,
+                ease: 'expo.out'
+            });
+            
+            // Re-trigger scramble for store title on scroll
+            ScrollTrigger.create({
+                trigger: '.store',
+                start: 'top 80%',
+                onEnter: () => {
+                    const storeTitle = document.querySelector('.store .section-title');
+                    const text = storeTitle.getAttribute('data-text');
+                    const scrambler = new TextScrambler(storeTitle);
+                    scrambler.setText(text);
+                },
+                once: true
+            });
+        }
+
+        // WebGL GLSL Background
+        const container = document.getElementById('webgl-container');
+        const scene = new THREE.Scene();
+        const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 10);
+        camera.position.z = 1;
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        container.appendChild(renderer.domElement);
+
+        const uniforms = {
+            u_time: { value: 0.0 },
+            u_resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
+            u_mouse: { value: new THREE.Vector2(0.5, 0.5) }
+        };
+
+        const material = new THREE.ShaderMaterial({
+            vertexShader: document.getElementById('vertexShader').textContent,
+            fragmentShader: document.getElementById('fragmentShader').textContent,
+            uniforms: uniforms
+        });
+
+        const geometry = new THREE.PlaneGeometry(2, 2);
+        const mesh = new THREE.Mesh(geometry, material);
+        scene.add(mesh);
+
+        document.addEventListener('mousemove', (e) => {
+            // Normalized mouse coordinates
+            uniforms.u_mouse.value.x = e.clientX / window.innerWidth;
+            uniforms.u_mouse.value.y = 1.0 - (e.clientY / window.innerHeight);
+        });
+
+        function animate(time) {
+            requestAnimationFrame(animate);
+            uniforms.u_time.value = time * 0.001;
+            renderer.render(scene, camera);
+        }
+        requestAnimationFrame(animate);
+
+        window.addEventListener('resize', () => {
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            uniforms.u_resolution.value.set(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>
